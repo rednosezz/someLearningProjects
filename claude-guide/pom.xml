@@ -5,13 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.study</groupId>
-        <artifactId>claude-guide</artifactId>
+        <artifactId>rednose</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>claude-learn</artifactId>
-    <name>claude-learn</name>
-    <description>我的第一个 Claude 使用学习项目</description>
+    <artifactId>claude-guide</artifactId>
+    <name>claude-guide</name>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <modules>
+        <module>MyFirstClaudeLearningProject</module>
+    </modules>
+
 
     <properties>
         <java.version>17</java.version>
