@@ -1,0 +1,10 @@
+# IntelliJ IDEA
+.idea/
+
+# Spring Boot
+spring-ai-study/target/
+poker-game/target/
+
+# OS
+.DS_Store
+Thumbs.db
