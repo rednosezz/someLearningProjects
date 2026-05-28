@@ -1,0 +1,4 @@
+# 强制语言检测（解决混仓情况下 GitHub 无法正确识别子项目语言的问题）
+poker-game/** linguist-language=Java
+spring-ai-study/** linguist-language=Java
+claude-guide/** linguist-language=Markdown
