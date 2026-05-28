@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>德州扑克</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a5c36;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+        }
+        .top-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        input {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .btn-create { background: #4CAF50; color: white; }
+        .btn-create:hover { background: #45a049; }
+        .btn-join { background: #2196F3; color: white; }
+        .btn-join:hover { background: #1976D2; }
+
+        .table {
+            background: #1a7a42;
+            border-radius: 150px;
+            padding: 30px 50px;
+            min-width: 600px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .player-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.2);
+            width: 100%;
+            justify-content: space-between;
+        }
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .player-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .player-score {
+            font-size: 14px;
+            color: #ffd700;
+        }
+        .cards {
+            display: flex;
+            gap: 8px;
+        }
+        .card {
+            width: 60px;
+            height: 85px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .card.red { color: #e53935; }
+        .card.black { color: #212121; }
+        .card.back {
+            background: linear-gradient(135deg, #1e3a5f 25%, #2c5282 25%, #2c5282 50%, #1e3a5f 50%, #1e3a5f 75%, #2c5282 75%);
+            background-size: 20px 20px;
+            color: transparent;
+        }
+        .community-area {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .community-cards {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .pot {
+            font-size: 20px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .action-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn-fold { background: #e53935; color: white; }
+        .btn-check { background: #757575; color: white; }
+        .btn-call { background: #4CAF50; color: white; }
+        .btn-raise { background: #2196F3; color: white; }
+        .btn-allin { background: #ff9800; color: white; }
+        .btn-fold:hover { background: #c62828; }
+        .btn-check:hover { background: #616161; }
+        .btn-call:hover { background: #388e3c; }
+        .btn-raise:hover { background: #1976D2; }
+        .btn-allin:hover { background: #f57c00; }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .raise-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .raise-input input {
+            width: 100px;
+        }
+
+        .log-area {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            width: 100%;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+        }
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .waiting-message {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #ffd700;
+        }
+
+        .game-ended {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .winner-name {
+            font-size: 24px;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .btn-ready {
+            background: #9c27b0;
+            color: white;
+            margin-top: 10px;
+        }
+        .btn-ready:hover { background: #7b1fa2; }
+
+        .hand-result {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+        .ready-status {
+            font-size: 12px;
+            margin-top: 3px;
+        }
+        .ready-status.ready { color: #4CAF50; }
+        .ready-status.waiting { color: #ffd700; }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <input type="text" id="playerName" placeholder="你的名字" value="玩家">
+        <input type="text" id="roomIdInput" placeholder="房间号">
+        <button class="btn-create" onclick="createRoom()">创建房间</button>
+        <button class="btn-join" onclick="joinRoom()">加入房间</button>
+    </div>
+
+    <div id="gameArea" class="table" style="display: none;">
+        <div id="opponentArea" class="player-area">
+            <div class="player-info">
+                <span class="player-name" id="opponentName">对手</span>
+                <span class="player-score">积分: <span id="opponentScore">1000</span></span>
+                <span id="opponentReadyStatus" class="ready-status">⏳ 等待中</span>
+                <span id="opponentHandResult" class="hand-result"></span>
+            </div>
+            <div class="cards" id="opponentCards">
+                <div class="card back">??</div>
+                <div class="card back">??</div>
+            </div>
+        </div>
+
+        <div class="community-area">
+            <div class="community-cards" id="communityCards">
+                <div class="card back">??</div>
+                <div class="card back">??</div>
+                <div class="card back">??</div>
+                <div class="card back">??</div>
+                <div class="card back">??</div>
+            </div>
+            <div class="pot">底池: <span id="potAmount">0</span></div>
+        </div>
+
+        <div id="playerArea" class="player-area">
+            <div class="cards" id="playerCards">
+                <div class="card back">??</div>
+                <div class="card back">??</div>
+            </div>
+            <div class="player-info" style="text-align: right;">
+                <span class="player-name" id="playerNameDisplay">你</span>
+                <span class="player-score">积分: <span id="playerScore">1000</span></span>
+                <span id="playerReadyStatus" class="ready-status">⏳ 等待中</span>
+                <span id="playerHandResult" class="hand-result"></span>
+            </div>
+        </div>
+
+        <div id="readyArea" style="display: none; text-align: center; margin-top: 15px;">
+            <button id="readyBtn" onclick="sendReady()">准备开始</button>
+            <div id="waitingOpponentText" style="display: none; margin-top: 10px; color: #ffd700;">等待对手准备...</div>
+        </div>
+
+        <div id="waitingMessage" class="waiting-message" style="display: none;">
+            等待对手加入...
+        </div>
+
+        <div id="actionArea" class="action-area" style="display: none;">
+            <button class="btn-fold" id="btnFold" onclick="doAction('FOLD', 0)">弃牌</button>
+            <button class="btn-check" id="btnCheck" onclick="doAction('CHECK', 0)">过牌</button>
+            <button class="btn-call" id="btnCall" onclick="doAction('CALL', 0)">跟注 0</button>
+            <button class="btn-raise" id="btnRaise" onclick="doAction('RAISE', 0)">加注</button>
+            <button class="btn-allin" id="btnAllin" onclick="doAction('ALL_IN', 0)">全下</button>
+        </div>
+
+        <div class="raise-input" id="raiseInput" style="display: none;">
+            <input type="number" id="raiseAmount" placeholder="加注金额" min="1">
+            <button class="btn-raise" onclick="confirmRaise()">确认加注</button>
+        </div>
+
+        <div id="gameEndedArea" class="game-ended" style="display: none;">
+            <div class="winner-name" id="winnerName"></div>
+            <div id="gameEndedText" style="color: #ffd700;">本局结束，胜负已分</div>
+        </div>
+    </div>
+
+    <div id="logArea" class="log-area" style="display: none;">
+        <div id="logEntries"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script>
+        let ws = null;
+        let playerId = null;
+        let roomId = null;
+        let amountToCall = 0;
+        let isConnected = false;
+        let myTurn = false;
+
+        function connect() {
+            console.log('正在连接...');
+            const wsUrl = 'http://' + window.location.host + '/ws';
+            ws = new SockJS(wsUrl);
+
+            ws.onopen = function() {
+                console.log('WebSocket连接成功');
+                isConnected = true;
+                addLog('已连接到服务器');
+            };
+
+            ws.onmessage = function(event) {
+                console.log('收到消息:', event.data);
+                const msg = JSON.parse(event.data);
+                handleMessage(msg);
+            };
+
+            ws.onclose = function(e) {
+                console.log('WebSocket连接关闭', e);
+                isConnected = false;
+                addLog('连接已断开');
+            };
+
+            ws.onerror = function(e) {
+                console.error('WebSocket错误:', e);
+                addLog('连接错误，请刷新页面');
+            };
+        }
+
+        function send(data) {
+            console.log('发送消息:', data);
+            if (ws && ws.readyState === SockJS.OPEN) {
+                ws.send(JSON.stringify(data));
+            } else {
+                console.error('WebSocket未连接，当前状态:', ws ? ws.readyState : 'ws is null');
+                addLog('发送失败，请刷新页面重试');
+            }
+        }
+
+        function createRoom() {
+            if (!isConnected) {
+                alert('还未连接到服务器，请稍候...');
+                return;
+            }
+            const playerName = document.getElementById('playerName').value || '玩家';
+            const roomIdInput = document.getElementById('roomIdInput').value;
+            console.log('创建房间:', playerName, '房间号:', roomIdInput || '随机');
+            send({
+                type: 'CREATE_ROOM',
+                roomId: null,
+                playerId: null,
+                payload: roomIdInput ? { playerName: playerName, roomId: roomIdInput } : playerName
+            });
+        }
+
+        function joinRoom() {
+            if (!isConnected) {
+                alert('还未连接到服务器，请稍候...');
+                return;
+            }
+            const playerName = document.getElementById('playerName').value || '玩家';
+            const roomIdInput = document.getElementById('roomIdInput').value;
+            if (!roomIdInput) {
+                alert('请输入房间号');
+                return;
+            }
+            console.log('加入房间:', roomIdInput, playerName);
+            send({
+                type: 'JOIN_ROOM',
+                roomId: null,
+                playerId: null,
+                payload: { roomId: roomIdInput, playerName: playerName }
+            });
+        }
+
+        function handleMessage(msg) {
+            console.log('处理消息:', msg.type, msg);
+            switch (msg.type) {
+                case 'ROOM_CREATED':
+                case 'ROOM_JOINED':
+                    playerId = msg.payload.playerId;
+                    roomId = msg.payload.roomId;
+                    document.getElementById('gameArea').style.display = 'flex';
+                    document.getElementById('logArea').style.display = 'block';
+                    document.getElementById('actionArea').style.display = 'none';
+                    document.getElementById('readyArea').style.display = 'none';
+                    document.getElementById('waitingMessage').style.display = 'block';
+                    document.getElementById('playerNameDisplay').textContent = document.getElementById('playerName').value || '玩家';
+                    document.getElementById('playerReadyStatus').textContent = '⏳ 等待中';
+                    document.getElementById('playerReadyStatus').className = 'ready-status waiting';
+                    document.getElementById('opponentReadyStatus').textContent = '';
+                    addLog(msg.type === 'ROOM_CREATED' ? '房间已创建: ' + roomId : '已加入房间: ' + roomId);
+                    break;
+
+                case 'PLAYER_JOINED':
+                    // 不重复设置playerId和roomId（ROOM_JOINED已设置）
+                    document.getElementById('gameArea').style.display = 'flex';
+                    document.getElementById('logArea').style.display = 'block';
+                    document.getElementById('waitingMessage').style.display = 'none';
+                    document.getElementById('readyArea').style.display = 'block';
+                    document.getElementById('readyBtn').style.display = 'inline-block';
+                    document.getElementById('waitingOpponentText').style.display = 'none';
+                    document.getElementById('opponentName').textContent = msg.payload.playerName;
+                    document.getElementById('opponentReadyStatus').textContent = '⏳ 等待中';
+                    document.getElementById('opponentReadyStatus').className = 'ready-status waiting';
+                    addLog(msg.payload.playerName + ' 已加入房间');
+                    break;
+
+                case 'GAME_STARTED':
+                    document.getElementById('gameEndedArea').style.display = 'none';
+                    document.getElementById('actionArea').style.display = 'none';
+                    document.getElementById('readyArea').style.display = 'none';
+                    document.getElementById('playerHandResult').textContent = '';
+                    document.getElementById('opponentHandResult').textContent = '';
+                    document.getElementById('playerReadyStatus').textContent = '';
+                    document.getElementById('opponentReadyStatus').textContent = '';
+                    resetCards();
+                    addLog('游戏开始，庄家位置: ' + msg.payload.dealer);
+                    break;
+
+                case 'HOLE_CARDS':
+                    const isMe = msg.playerId === playerId;
+                    if (isMe) {
+                        const cardsDiv = document.getElementById('playerCards');
+                        cardsDiv.innerHTML = '';
+                        msg.payload.cards.forEach(card => {
+                            cardsDiv.appendChild(createCard(card.suit, card.rank, true));
+                        });
+                    }
+                    break;
+
+                case 'COMMUNITY_CARDS':
+                    updateCommunityCards(msg.payload.cards);
+                    addLog('公共牌: ' + msg.payload.phase);
+                    break;
+
+                case 'YOUR_TURN':
+                    myTurn = (msg.playerId === playerId);
+                    amountToCall = msg.payload.amountToCall;
+                    document.getElementById('actionArea').style.display = 'flex';
+                    updateActionButtons(myTurn, amountToCall);
+                    if (myTurn) {
+                        addLog('轮到你了!');
+                    } else {
+                        addLog('等待对手行动...');
+                    }
+                    break;
+
+                case 'PLAYER_ACTION':
+                    addLog(msg.payload.playerId.substring(0, 8) + ': ' + msg.payload.action + (msg.payload.amount ? ' ' + msg.payload.amount : ''));
+                    break;
+
+                case 'ROUND_ENDED':
+                    document.getElementById('potAmount').textContent = msg.payload.pot || 0;
+                    break;
+
+                case 'SHOWDOWN':
+                    document.getElementById('actionArea').style.display = 'none';
+                    msg.payload.players.forEach(p => {
+                        if (p.playerId === playerId) {
+                            document.getElementById('playerScore').textContent = p.score;
+                            document.getElementById('playerHandResult').textContent = p.handRank;
+                            // 显示自己的手牌
+                            if (p.best5) {
+                                const cardsDiv = document.getElementById('playerCards');
+                                cardsDiv.innerHTML = '';
+                                p.best5.slice(0, 2).forEach(card => {
+                                    cardsDiv.appendChild(createCard(card.suit, card.rank, true));
+                                });
+                            }
+                        } else {
+                            document.getElementById('opponentScore').textContent = p.score;
+                            document.getElementById('opponentHandResult').textContent = p.handRank;
+                            // 显示对手的手牌
+                            if (p.best5) {
+                                const cardsDiv = document.getElementById('opponentCards');
+                                cardsDiv.innerHTML = '';
+                                p.best5.slice(0, 2).forEach(card => {
+                                    cardsDiv.appendChild(createCard(card.suit, card.rank, true));
+                                });
+                            }
+                        }
+                    });
+                    break;
+
+                case 'GAME_ENDED':
+                    document.getElementById('gameEndedArea').style.display = 'block';
+                    const isWinner = msg.payload.winnerId === playerId;
+                    document.getElementById('winnerName').textContent = isWinner ? '你赢了!' : (msg.payload.winnerName + ' 获胜!');
+                    document.getElementById('actionArea').style.display = 'none';
+                    document.getElementById('readyArea').style.display = 'block';
+                    document.getElementById('readyBtn').style.display = 'inline-block';
+                    document.getElementById('readyBtn').textContent = '再来一局';
+                    document.getElementById('waitingOpponentText').style.display = 'none';
+                    addLog(msg.payload.winnerName + ' 获胜!');
+                    break;
+
+                case 'PLAYER_READY':
+                    if (msg.payload.playerId === playerId) {
+                        document.getElementById('playerReadyStatus').textContent = '✅ 已准备';
+                        document.getElementById('playerReadyStatus').className = 'ready-status ready';
+                        document.getElementById('readyBtn').style.display = 'none';
+                        document.getElementById('waitingOpponentText').style.display = 'block';
+                    } else {
+                        document.getElementById('opponentReadyStatus').textContent = '✅ 已准备';
+                        document.getElementById('opponentReadyStatus').className = 'ready-status ready';
+                    }
+                    addLog((msg.payload.playerId === playerId ? '你' : msg.payload.playerName) + ' 已准备');
+                    break;
+
+                case 'ERROR':
+                    alert(msg.payload.code + ': ' + msg.payload.message);
+                    break;
+
+                case 'PLAYER_DISCONNECTED':
+                    addLog('玩家 ' + msg.payload.playerId.substring(0, 8) + ' 已断线');
+                    break;
+            }
+        }
+
+        function createCard(suit, rank, show) {
+            const div = document.createElement('div');
+            div.className = 'card';
+            const suitSymbols = { CLUBS: '♣', DIAMONDS: '♦', HEARTS: '♥', SPADES: '♠' };
+            const redSuits = ['DIAMONDS', 'HEARTS'];
+            if (show) {
+                const rankDisplay = rank.replace('HIGH_', '').replace('TEN', '10');
+                div.textContent = suitSymbols[suit] + rankDisplay;
+                div.classList.add(redSuits.includes(suit) ? 'red' : 'black');
+            } else {
+                div.classList.add('back');
+                div.textContent = '??';
+            }
+            return div;
+        }
+
+        function updateCommunityCards(cards) {
+            const container = document.getElementById('communityCards');
+            container.innerHTML = '';
+            cards.forEach(card => {
+                container.appendChild(createCard(card.suit, card.rank, true));
+            });
+            while (container.children.length < 5) {
+                const empty = document.createElement('div');
+                empty.className = 'card back';
+                empty.textContent = '??';
+                container.appendChild(empty);
+            }
+        }
+
+        function updateActionButtons(isMyTurn, toCall) {
+            const btnFold = document.getElementById('btnFold');
+            const btnCheck = document.getElementById('btnCheck');
+            const btnCall = document.getElementById('btnCall');
+            const btnRaise = document.getElementById('btnRaise');
+            const btnAllin = document.getElementById('btnAllin');
+
+            if (!isMyTurn) {
+                btnFold.disabled = true;
+                btnCheck.disabled = true;
+                btnCall.disabled = true;
+                btnRaise.disabled = true;
+                btnAllin.disabled = true;
+                return;
+            }
+
+            btnFold.disabled = false;
+            btnCheck.disabled = toCall !== 0;
+            btnCall.disabled = toCall === 0;
+            btnCall.textContent = toCall === 0 ? '跟注 0' : '跟注 ' + toCall;
+            btnRaise.disabled = false;
+            btnAllin.disabled = false;
+        }
+
+        function doAction(action, amount) {
+            send({
+                type: 'PLAYER_ACTION',
+                roomId: roomId,
+                playerId: playerId,
+                payload: { roomId: roomId, action: action, amount: amount }
+            });
+            document.getElementById('actionArea').style.display = 'none';
+            document.getElementById('raiseInput').style.display = 'none';
+            myTurn = false;
+        }
+
+        function confirmRaise() {
+            const amount = parseInt(document.getElementById('raiseAmount').value) || 0;
+            if (amount > 0) {
+                doAction('RAISE', amount);
+            }
+        }
+
+        function sendReady() {
+            document.getElementById('playerReadyStatus').textContent = '✅ 已准备';
+            document.getElementById('playerReadyStatus').className = 'ready-status ready';
+            document.getElementById('readyBtn').style.display = 'none';
+            document.getElementById('waitingOpponentText').style.display = 'block';
+            send({
+                type: 'READY',
+                roomId: roomId,
+                playerId: playerId,
+                payload: {}
+            });
+        }
+
+        function addLog(message) {
+            const logEntries = document.getElementById('logEntries');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            logEntries.insertBefore(entry, logEntries.firstChild);
+        }
+
+        function resetCards() {
+            document.getElementById('playerCards').innerHTML = '<div class="card back">??</div><div class="card back">??</div>';
+            document.getElementById('opponentCards').innerHTML = '<div class="card back">??</div><div class="card back">??</div>';
+            document.getElementById('communityCards').innerHTML = '';
+            document.getElementById('potAmount').textContent = '0';
+        }
+
+        connect();
+    </script>
+</body>
+</html>

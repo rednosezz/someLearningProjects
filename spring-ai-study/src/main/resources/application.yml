@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: "spring-ai-study"
+  ai:
+    minimax:
+      api-key: "sk-cp-CCBCL5WcQJwSADaMWxk7N359VVZnfRmWCG3-dNCK-6YHdqNK1bmHBRTXJ-_z21ahfLvNvBxWZHdiDzb-cqQ0mRFj-toncnftHSZceDvXKxXgQyojA3k9fzY"
+    model:
+      chat:
+        options:
+          model: MiniMax-M2.7
