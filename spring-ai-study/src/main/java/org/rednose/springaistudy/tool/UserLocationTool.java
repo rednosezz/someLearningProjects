@@ -30,7 +30,7 @@ public class UserLocationTool implements BiFunction<UserLocationParam, ToolConte
             }
         }
         if (userId == null || !userInfo.containsKey(userId)) {
-            throw new RuntimeException("用户信息不存在");
+            return "用户" + userId + "的所在地是" + userInfo.get(userId);
         }
         return "用户" + userId + "的所在地是" + userInfo.get(userId);
     }

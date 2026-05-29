@@ -7,6 +7,7 @@ import com.alibaba.cloud.ai.graph.exception.GraphRunnerException;
 import com.alibaba.fastjson.JSONObject;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import org.rednose.springaistudy.tool.UserLocationTool;
 import org.rednose.springaistudy.tool.WeatherParam;
 import org.rednose.springaistudy.tool.WeatherTool;
 import org.springframework.ai.chat.messages.AssistantMessage;

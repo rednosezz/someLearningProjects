@@ -38,5 +38,11 @@ public class WeatherResponse {
     @JsonProperty("error_message")
     private String errorMessage;
 
+    /**
+     * 用户ID(非必填)
+     */
+    @JsonProperty("user_id")
+    private String userId;
+
 }
 

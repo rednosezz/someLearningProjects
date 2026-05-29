@@ -41,7 +41,9 @@ public class AiAgentConfig {
 
             如果用户没有提供具体城市，或者提到"本地"、"当地"、"这里"等模糊表述，
             需要先通过 userId 调用 get_user_city 工具获取用户所在城市，
-            再用该城市名称调用 get_weather 查询天气。
+            再用该城市名称调用 get_weather 查询天气。如果没有获取到用户信息，请输出用户ID
+            
+            
             """ ;
 
         MiniMaxApi miniMaxApi = new MiniMaxApi(apiKey);
@@ -73,10 +75,10 @@ public class AiAgentConfig {
         ReactAgent agent = ReactAgent.builder()
                 .name("天气助手")
                 .model(miniMaxChatModel)
-                .hooks(new MessageTrimmingHook(),
+                .hooks(
                         new RAGAgentHook(SpringUtils.getBean("vectorStore")),
                         skillsHook)
-                .tools(List.of(weatherTool,userLocationTool))
+                .tools(weatherTool,userLocationTool)
                 .systemPrompt(SYSTEM_PROMPT)
                 .saver(new MemorySaver())
                 //Agent 通过状态自动维护对话历史。使用 MemorySaver 配置持久化存储,默认使用hashmap
