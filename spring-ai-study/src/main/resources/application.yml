@@ -8,3 +8,11 @@ spring:
       chat:
         options:
           model: MiniMax-M2.7
+      embedding: zhipuai
+
+    zhipuai:
+      api-key: ebb7ea3face14b738d6c6a5c8a3b3ed3.J092a44gqIEE6S4u
+      base-url: https://open.bigmodel.cn/api/paas
+      embedding:
+        options:
+          model: embedding-2

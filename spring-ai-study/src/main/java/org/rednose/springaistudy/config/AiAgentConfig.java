@@ -6,11 +6,14 @@ import com.alibaba.cloud.ai.graph.checkpoint.savers.MemorySaver;
 import com.alibaba.cloud.ai.graph.skills.registry.SkillRegistry;
 import com.alibaba.cloud.ai.graph.skills.registry.classpath.ClasspathSkillRegistry;
 import org.rednose.springaistudy.tool.*;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.minimax.MiniMaxChatModel;
 import org.springframework.ai.minimax.MiniMaxChatOptions;
 import org.springframework.ai.minimax.api.MiniMaxApi;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.function.FunctionToolCallback;
+import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -71,7 +74,7 @@ public class AiAgentConfig {
                 .name("天气助手")
                 .model(miniMaxChatModel)
                 .hooks(new MessageTrimmingHook(),
-                        new RAGAgentHook(SpringUtils.getBean(VectorStore.class)),
+                        new RAGAgentHook(SpringUtils.getBean("vectorStore")),
                         skillsHook)
                 .tools(List.of(weatherTool,userLocationTool))
                 .systemPrompt(SYSTEM_PROMPT)
