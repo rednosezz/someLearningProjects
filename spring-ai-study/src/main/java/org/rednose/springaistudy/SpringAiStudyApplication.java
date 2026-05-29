@@ -22,7 +22,7 @@ public class SpringAiStudyApplication {
 
 
 
-    public static void main(String[] args) throws GraphRunnerException {
+    public static void main(String[] args) {
         SpringApplication.run(SpringAiStudyApplication.class, args);
     }
 

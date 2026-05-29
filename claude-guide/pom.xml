@@ -12,7 +12,7 @@
     <artifactId>claude-guide</artifactId>
     <name>claude-guide</name>
     <version>0.0.1-SNAPSHOT</version>
-
+    <packaging>pom</packaging>
     <modules>
         <module>MyFirstClaudeLearningProject</module>
     </modules>

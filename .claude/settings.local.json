@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn compile *)",
+      "Bash(unzip -p /c/Users/A/.m2/repository/com/alibaba/cloud/ai/spring-ai-alibaba-graph-core/1.1.2.0/spring-ai-alibaba-graph-core-1.1.2.0.jar com/alibaba/cloud/ai/graph/HasMetadata.class)",
+      "Bash(jar tf *)",
+      "Bash(javap *)",
+      "Bash(xargs -I{} sh -c 'echo \"=== {} ===\" && unzip -p /c/Users/A/.m2/repository/com/alibaba/cloud/ai/spring-ai-alibaba-agent-framework/1.1.2.0/spring-ai-alibaba-agent-framework-1.1.2.0.jar {} 2>/dev/null | strings | grep -i \"outputconverter\\\\|beanoutput\" 2>/dev/null')",
+      "Bash(unzip -p spring-ai-alibaba-agent-framework-1.1.2.0.jar com/alibaba/cloud/ai/graph/agent/tools/ToolContextConstants.class)",
+      "Bash(xxd)"
+    ]
+  }
+}
