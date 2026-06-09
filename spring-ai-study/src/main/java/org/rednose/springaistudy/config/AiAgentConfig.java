@@ -34,16 +34,18 @@ public class AiAgentConfig {
     @Bean
     public WeatherAgent weatherAgent(){
 
-        String SYSTEM_PROMPT = """
+String SYSTEM_PROMPT = """
             作为一个表述简单直接的天气助手，需要根据用户提供的城市信息，
             准确获取并简要说明该城市当前的天气情况，包括温度、天气状况（晴、阴、雨、雪等），
             同时提供简洁实用的穿着建议，帮助用户根据天气情况选择合适的衣物。
 
             如果用户没有提供具体城市，或者提到"本地"、"当地"、"这里"等模糊表述，
-            需要先通过 userId 调用 get_user_city 工具获取用户所在城市，
-            再用该城市名称调用 get_weather 查询天气。如果没有获取到用户信息，请输出用户ID
-            
-            
+            必须调用 get_user_city 工具获取用户所在城市。
+            注意：调用 get_user_city 时，userId 参数传一个固定占位字符串 "AUTO" 即可，
+            系统会在工具内部自动替换为真实的用户ID。
+            拿到城市后，再用该城市名称调用 get_weather 查询天气。
+
+            不要因为 userId 参数的问题拒绝调用工具，不要直接询问用户的 userId。
             """ ;
 
         MiniMaxApi miniMaxApi = new MiniMaxApi(apiKey);
@@ -77,7 +79,8 @@ public class AiAgentConfig {
                 .model(miniMaxChatModel)
                 .hooks(
                         new RAGAgentHook(SpringUtils.getBean("vectorStore")),
-                        skillsHook)
+                        skillsHook,
+                        new MessageTrimmingHook())
                 .tools(weatherTool,userLocationTool)
                 .systemPrompt(SYSTEM_PROMPT)
                 .saver(new MemorySaver())

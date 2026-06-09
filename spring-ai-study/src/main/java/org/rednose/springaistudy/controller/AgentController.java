@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 /**
  * @author lixuefan
  * @since 2026/5/29
@@ -43,8 +45,11 @@ public class AgentController {
     public WeatherResponse weatherWithUser(@RequestParam String message, @RequestParam String userId) {
         try {
             RunnableConfig config = RunnableConfig.builder()
+                    .threadId(userId)
                     .addMetadata("userId", userId)
                     .build();
+            log.info("[入口] RunnableConfig metadata = {}", config.metadata().orElse(Map.of()));
+
             String json = weatherAgent.call(message, config);
             return objectMapper.readValue(json, WeatherResponse.class);
         } catch (Exception e) {

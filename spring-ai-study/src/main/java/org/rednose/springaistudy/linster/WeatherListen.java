@@ -28,7 +28,7 @@ public class WeatherListen {
         System.out.println("请输入城市名称（输入 stop 退出）：");
 
         RunnableConfig runnableConfig = RunnableConfig.builder()
-                .threadId(String.valueOf(Thread.currentThread().getId()))
+                .threadId(String.valueOf(Thread.currentThread().threadId()))
                 .addMetadata("userId", "1")
                 .build();
 

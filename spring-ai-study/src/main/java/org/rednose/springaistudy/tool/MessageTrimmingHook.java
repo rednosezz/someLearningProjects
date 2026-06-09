@@ -16,11 +16,11 @@ import java.util.List;
  * @since 2026/5/28
  */
 
-@HookPositions({HookPosition.AFTER_AGENT})
+@HookPositions({HookPosition.AFTER_MODEL})
 @Slf4j
 public class MessageTrimmingHook extends MessagesModelHook{
 
-    private static final int MAX_MESSAGES = 6;
+    private static final int MAX_MESSAGES = 20;
 
     @Override
     public String getName() {
@@ -37,7 +37,7 @@ public class MessageTrimmingHook extends MessagesModelHook{
         if (previousMessages.size() <= MAX_MESSAGES) {
             return new AgentCommand(previousMessages);
         }
-        //超过6条,即完成一次完整的一轮天气查询后,进行消息修剪
-        return new AgentCommand(previousMessages.subList(previousMessages.size() - 2, previousMessages.size()));
+        //超过20条,即完成一次完整的一轮天气查询后,进行消息修剪
+        return new AgentCommand(previousMessages.subList(previousMessages.size() - 8, previousMessages.size()));
     }
 }
